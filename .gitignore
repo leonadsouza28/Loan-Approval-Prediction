@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Large model files (use git-lfs if needed)
+# models/*.pkl   # Uncomment if you want to exclude model files
+
+# Streamlit cache
+.streamlit/
+
+# Artifacts (optional – keep EDA plots but exclude large binaries)
+artifacts/eda_plots/*.png
+artifacts/model_plots/*.png

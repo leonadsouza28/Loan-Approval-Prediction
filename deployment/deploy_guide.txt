@@ -1,0 +1,153 @@
+# FREE Cloud Deployment Guide
+# ==============================
+# Loan Approval Prediction Project
+
+# ──────────────────────────────────────────────────────────────────────
+# OPTION 1: Streamlit Community Cloud  (RECOMMENDED – 100% FREE)
+# ──────────────────────────────────────────────────────────────────────
+#
+# STEP 1 – Push your project to GitHub (public repository)
+#
+#   git init
+#   git add .
+#   git commit -m "initial commit"
+#   git branch -M main
+#   git remote add origin https://github.com/YOUR_USERNAME/loan-approval-prediction.git
+#   git push -u origin main
+#
+# STEP 2 – Commit the trained model files
+#
+#   After running `python src/train.py` locally, commit the generated artifacts:
+#   git add models/ artifacts/
+#   git commit -m "add trained model and artifacts"
+#   git push
+#
+#   (If model files are too large for GitHub, use the setup.sh trick below.)
+#
+# STEP 3 – Deploy on Streamlit Cloud
+#
+#   1. Go to https://share.streamlit.io
+#   2. Sign in with GitHub
+#   3. Click "New app"
+#   4. Repository : YOUR_USERNAME/loan-approval-prediction
+#      Branch     : main
+#      Main file  : app.py
+#   5. Click "Deploy!"
+#   6. Your app will be live at:
+#      https://YOUR_USERNAME-loan-approval-prediction-app-XXXX.streamlit.app
+#
+# OPTIONAL setup.sh (if model is not pre-committed):
+#   Create a file called setup.sh in the project root:
+#
+#     #!/bin/bash
+#     python src/train.py
+#
+#   Streamlit Cloud automatically runs setup.sh before launching the app.
+
+# ──────────────────────────────────────────────────────────────────────
+# OPTION 2: Hugging Face Spaces  (FREE – great for portfolio)
+# ──────────────────────────────────────────────────────────────────────
+#
+# STEP 1 – Create a Space
+#   1. Go to https://huggingface.co/spaces
+#   2. Click "Create new Space"
+#   3. Name: loan-approval-prediction
+#   4. SDK: Streamlit
+#   5. Visibility: Public (for portfolio)
+#
+# STEP 2 – Push code
+#   HF Spaces uses Git. Clone the Space repo and copy your files:
+#
+#   git clone https://huggingface.co/spaces/YOUR_HF_USERNAME/loan-approval-prediction
+#   cp -r /path/to/your/loan-approval-prediction/* ./loan-approval-prediction/
+#   cd loan-approval-prediction
+#   git add .
+#   git commit -m "deploy loan approval predictor"
+#   git push
+#
+# The Space auto-builds and your app is live at:
+#   https://huggingface.co/spaces/YOUR_HF_USERNAME/loan-approval-prediction
+
+# ──────────────────────────────────────────────────────────────────────
+# OPTION 3: Render.com  (FREE tier – 750 hrs/month)
+# ──────────────────────────────────────────────────────────────────────
+#
+# STEP 1 – Go to https://render.com and create a free account
+# STEP 2 – New → Web Service → Connect GitHub repo
+# STEP 3 – Configuration:
+#
+#   Name          : loan-approval-prediction
+#   Environment   : Python 3
+#   Build Command : pip install -r requirements.txt && python src/train.py
+#   Start Command : streamlit run app.py --server.port=$PORT --server.address=0.0.0.0
+#   Plan          : Free
+#
+# STEP 4 – Click "Create Web Service"
+#
+# Notes:
+#   - Free tier sleeps after 15 minutes of inactivity (first request may be slow)
+#   - 512 MB RAM limit on free tier
+
+# ──────────────────────────────────────────────────────────────────────
+# OPTION 4: AWS Free Tier – EC2  (requires credit card, but stays free
+#                                  if you stay within limits)
+# ──────────────────────────────────────────────────────────────────────
+#
+# Free tier: t2.micro instance, 750 hrs/month for 12 months
+#
+# STEP 1 – Create AWS account at https://aws.amazon.com/free
+#          (requires a credit card, but t2.micro is free for 12 months)
+#
+# STEP 2 – Launch EC2 Instance
+#   1. AWS Console → EC2 → Launch Instance
+#   2. Name: loan-approval-server
+#   3. AMI: Ubuntu Server 22.04 LTS (Free tier eligible)
+#   4. Instance type: t2.micro
+#   5. Create a key pair (download the .pem file – keep it safe!)
+#   6. Security group: Allow SSH (22), Custom TCP 8501 (from 0.0.0.0/0)
+#   7. Launch
+#
+# STEP 3 – Connect via SSH
+#   chmod 400 your-key.pem
+#   ssh -i your-key.pem ubuntu@YOUR_EC2_PUBLIC_IP
+#
+# STEP 4 – Install dependencies
+#   sudo apt update && sudo apt install -y python3-pip python3-venv git
+#   git clone https://github.com/YOUR_USERNAME/loan-approval-prediction.git
+#   cd loan-approval-prediction
+#   python3 -m venv venv
+#   source venv/bin/activate
+#   pip install -r requirements.txt
+#   python src/train.py
+#
+# STEP 5 – Run Streamlit (keep running with nohup)
+#   nohup streamlit run app.py --server.port=8501 --server.address=0.0.0.0 &
+#
+# STEP 6 – Access your app
+#   http://YOUR_EC2_PUBLIC_IP:8501
+#
+# COST PRECAUTIONS:
+#   - Always stop (not terminate) the instance when not in use.
+#   - Set a billing alarm at $1 in AWS Billing console.
+#   - t2.micro is always free-tier eligible for 12 months.
+
+# ──────────────────────────────────────────────────────────────────────
+# TROUBLESHOOTING
+# ──────────────────────────────────────────────────────────────────────
+#
+# Problem: "Model not found" error in Streamlit app
+# Solution: Run `python src/train.py` and make sure models/*.pkl exist.
+#
+# Problem: Streamlit Cloud says "Module not found"
+# Solution: Check requirements.txt has all packages listed exactly.
+#
+# Problem: Port 8501 not accessible on EC2
+# Solution: Go to EC2 → Security Groups → Inbound Rules →
+#           Add rule: Custom TCP, Port 8501, Source 0.0.0.0/0
+#
+# Problem: App crashes on Render/HF Spaces (memory limit)
+# Solution: Reduce model complexity (fewer trees in Random Forest).
+#           Or use Logistic Regression which is lighter.
+#
+# Problem: XGBoost import error on deployment
+# Solution: Add xgboost==2.0.3 to requirements.txt (already done).
